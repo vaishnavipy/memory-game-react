@@ -19,24 +19,23 @@ function App() {
   ];
 
 
-
-  const [pokemonArr] = useState(lodash.shuffle([...pokemon,...pokemon]))
+//Shuffles every time the page is refreshed
+  const [pokemonArr,setPokemonArr] = useState(lodash.shuffle([...pokemon,...pokemon]))
 
   const [pokemonImgArr,setPokemonImgArr] = useState([])
 
-  useEffect(()=>{
 
+  //On component mount, fetch image as blob and store it in an array
+  useEffect(()=>{
     pokemonArr.forEach((elm,index) => {
       fetch(`https://pokeres.bastionbot.org/images/pokemon/${elm.id}.png`)
       .then(response => response.blob())
       .then(image =>  setPokemonImgArr(prevArr => [...prevArr,{src:URL.createObjectURL(image),name:elm.name}]))
 
     })
-  
-   
   },[])
-    
 
+ 
    
  
  const [pokemonPair,setPokemonPair] = useState([])
@@ -56,8 +55,8 @@ function App() {
      const id = event.target.id
 console.log(cardsArr,id)
      if(cardsArr[id].name !== pokemonImgArr[id].name ){
-     const tempArr = [...cardsArr]
-     tempArr[id] = {...pokemonImgArr[id]};
+     const tempArr = [...cardsArr] // Make sure to use array literal to assign the array as an copy
+     tempArr[id] = {...pokemonImgArr[id]}; // Make sure to use only object literal to not modify the original object
    
      setCardsArr(tempArr)
      setMoves(prevMove => prevMove+1)
@@ -69,8 +68,9 @@ console.log(cardsArr,id)
    }
   }
 
+
+  //Make a check after every two cards have been opened 
   useEffect(()=>{
-    console.log("useeffect")
    
     if(pokemonPair.length ==2){
       if(pokemonPair[0].name !== pokemonPair[1].name){
@@ -105,6 +105,7 @@ console.log(cardsArr,id)
       alert("Congrats !, You've won")
       cardsDiv.forEach(elm =>  elm.classList.remove("rotate"))
       setCardsArr(Array(12).fill({src:question,name:"question"}))
+      
       setMoves(0)
     }
 
